@@ -151,7 +151,7 @@ const publicImages = [
   };
 
   return (
-    <>
+    <div className="edit-stock-wrapper">
       <AdminNavbar />
       <div className="dashboard-container">
         <div className="dashboard-header">
@@ -387,9 +387,9 @@ const publicImages = [
                         </div>
                       </td>
                       <td className="product-name">{prod.name}</td>
-                      <td>${prod.price.toFixed(2)}</td>
+                      <td>₹{prod.price.toFixed(2)}</td>
                       <td>{prod.qty}</td>
-                      <td>${prod.amount.toFixed(2)}</td>
+                      <td>₹{prod.amount.toFixed(2)}</td>
                       <td>
                         <div className="specs-container">
                           {prod.brand && <span className="spec-tag">Brand: {prod.brand}</span>}
@@ -430,7 +430,7 @@ const publicImages = [
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

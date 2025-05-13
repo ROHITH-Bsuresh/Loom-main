@@ -1,85 +1,107 @@
 // src/components/AdminNavbar.js
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const AdminNavbar = () => {
+  const [hoveredLink, setHoveredLink] = useState(null);
+
+  const getLinkStyle = (index, isDashboard = false) => ({
+    color: "white",
+    textDecoration: "none",
+    fontWeight: "700", // Increased font weight
+    padding: "0.6rem 1.2rem",
+    borderRadius: "6px",
+    fontSize: "0.95rem",
+    letterSpacing: "0.5px",
+    textTransform: "uppercase", // Make text uppercase
+    backgroundColor: hoveredLink === index ? "rgba(255,255,255,0.1)" : isDashboard ? "rgba(255,255,255,0.1)" : "transparent",
+    border: isDashboard ? "1px solid rgba(255,255,255,0.2)" : "none",
+    transition: "all 0.3s ease",
+    transform: hoveredLink === index ? "translateY(-2px)" : "none",
+  });
+
+  const navStyle = {
+    position: "fixed",
+    top: 0,
+    width: "100%",
+    background: "linear-gradient(135deg, #2c3e50 0%, #3498db 100%)",
+    padding: "0.8rem 2rem",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    zIndex: 1000,
+    flexWrap: "wrap",
+  };
+
+  const navLeftStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "1.5rem",
+    flexWrap: "wrap",
+  };
+
+  const logoStyle = {
+    height: "45px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+    transition: "transform 0.3s ease",
+  };
+
+  const navRightStyle = {
+    display: "flex",
+    justifyContent: "center",
+  };
+
+  const contentStyle = {
+    marginTop: "60px", // Reduced from 80px
+    padding: "1rem", // Reduced from 2rem
+  };
+
   return (
     <div>
       <nav style={navStyle}>
         <div style={navLeftStyle}>
-          <img src="/logo.jpg" alt="Logo" style={logoStyle} />
-          <Link to="/admin/categorypage" style={linkStyle}>Category Page</Link>
-          <Link to="/admin/edit-items" style={linkStyle}>Edit Items</Link>
-          <Link to="/admin/stock-list" style={linkStyle}>Stock List</Link>
-          <Link to="/admin/ByBrand" style={linkStyle}>By Brand</Link>
+          <img
+            src="/logo.jpg"
+            alt="Logo"
+            style={logoStyle}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          />
+          {[
+            ["CATEGORY PAGE", "/admin/categorypage"],
+            ["EDIT ITEMS", "/admin/edit-items"],
+            ["STOCK LIST", "/admin/stock-list"],
+            ["BY BRAND", "/admin/ByBrand"]
+          ].map(([label, path], index) => (
+            <Link
+              key={index}
+              to={path}
+              style={getLinkStyle(index)}
+              onMouseEnter={() => setHoveredLink(index)}
+              onMouseLeave={() => setHoveredLink(null)}
+            >
+              {label}
+            </Link>
+          ))}
         </div>
         <div style={navRightStyle}>
-          <Link to="/admin/AdminDashboard" style={linkStyle}>Admin Dashboard</Link>
+          <Link
+            to="/admin/AdminDashboard"
+            style={getLinkStyle("dashboard", true)}
+            onMouseEnter={() => setHoveredLink("dashboard")}
+            onMouseLeave={() => setHoveredLink(null)}
+          >
+            ADMIN DASHBOARD
+          </Link>
         </div>
-      </nav>
+      </nav>  
       <div style={contentStyle}>
-        {/* Your main content will go here */}
+        {/* Your main content goes here */}
       </div>
     </div>
   );
 };
-
-const navStyle = {
-  position: "fixed",
-  top: 0,
-  width: "100%",
-  backgroundColor: "#333",
-  color: "white",
-  padding: "1rem",
-  zIndex: 1000,
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)"
-};
-
-const navLeftStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "20px"
-};
-
-const logoStyle = {
-  height: "50px"
-};
-
-const navRightStyle = {
-  marginRight: "20px"
-};
-
-const linkStyle = {
-  color: "white",
-  textDecoration: "none",
-  fontWeight: "bold",
-  padding: "10px 15px",
-  borderRadius: "5px",
-  transition: "all 0.3s ease"
-};
-
-const contentStyle = {
-  marginTop: "80px", // Ensures the content is not hidden behind the navbar
-};
-
-const linkHoverStyle = {
-  color: "#3498db", // Change to highlight color when hovered
-  backgroundColor: "#2c3e50"
-};
-
-// Adding hover effects on links using JavaScript (for dynamic interaction)
-document.querySelectorAll('a').forEach(link => {
-  link.addEventListener('mouseenter', (e) => {
-    e.target.style.color = linkHoverStyle.color;
-    e.target.style.backgroundColor = linkHoverStyle.backgroundColor;
-  });
-  link.addEventListener('mouseleave', (e) => {
-    e.target.style.color = linkStyle.color;
-    e.target.style.backgroundColor = '';
-  });
-});
 
 export default AdminNavbar;

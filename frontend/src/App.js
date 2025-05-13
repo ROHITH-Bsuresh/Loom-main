@@ -16,6 +16,9 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import ByBrand from "./components/admin/ByBrand";
 import RequirementPage from "./components/admin/RequirementPage";
 import AdminNavbar from "./components/admin/AdminNavbar";
+import Order from './components/admin/Order';
+import Manage from './components/admin/Manage';
+import AllOrders from './components/admin/AllOrders';
 
 import Home from "./components/user/Home";
 import About from "./components/user/About";
@@ -68,6 +71,10 @@ function App() {
         <Route path="/admin/admindashboard" element={<AdminDashboard />} />
         <Route path="/admin/bybrand" element={<ByBrand />} />
         <Route path="/admin/requirementpage" element={<RequirementPage />} />
+        <Route path="/admin/order/:productId" element={<Order />} />
+        <Route path="/admin/manage" element={<Manage />} />
+        <Route path="/admin/all-orders" element={<AllOrders />} />
+
       </Routes>
     </>
   );

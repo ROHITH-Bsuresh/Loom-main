@@ -1,0 +1,145 @@
+.requirement-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.requirement-page h2 {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.requirement-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.requirement-table th,
+.requirement-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.requirement-table th {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.requirement-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.qty-cell {
+  font-weight: 600;
+}
+
+.critical-stock {
+  background-color: #ffebee;
+}
+
+.critical-stock .qty-cell {
+  color: #d32f2f;
+  font-weight: 700;
+}
+
+.low-stock {
+  background-color: #fff8e1;
+}
+
+.low-stock .qty-cell {
+  color: #f57c00;
+}
+
+.pending-row {
+  background-color: #e8f5e9;
+}
+
+.pending-row .qty-cell {
+  color: #388e3c;
+}
+
+.pending-status {
+  background: #ffa726;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.order-button {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.order-button:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.manage-button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.manage-button:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1024px) {
+  .requirement-table {
+    font-size: 0.9rem;
+  }
+  
+  .requirement-table th,
+  .requirement-table td {
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .requirement-table {
+    min-width: 800px;
+  }
+}

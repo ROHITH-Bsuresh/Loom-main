@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './StockList.css';
 
 function StockList() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Will store full product objects
   const [sales, setSales] = useState([]);
   const [form, setForm] = useState({
     date: '',
@@ -11,82 +12,195 @@ function StockList() {
     soldPrice: 0,
     total: 0
   });
+  const [error, setError] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/product-names')
-      .then(res => setProducts(res.data))
-      .catch(console.error);
-
+    fetchProducts();
     fetchSales();
   }, []);
 
-  const fetchSales = () => {
-    axios.get('http://localhost:5000/api/sales')
-      .then(res => setSales(res.data))
-      .catch(console.error);
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/products');
+      setProducts(res.data);
+    } catch (err) {
+      setError('Failed to fetch products');
+      console.error(err);
+    }
+  };
+
+  const fetchSales = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/sales');
+      setSales(res.data);
+    } catch (err) {
+      setError('Failed to fetch sales');
+      console.error(err);
+    }
+  };
+
+  const handleProductSelect = (e) => {
+    const productId = e.target.value;
+    const selected = products.find(p => p._id === productId);
+    setSelectedProduct(selected);
+    
+    setForm(prev => ({
+      ...prev,
+      productName: selected ? selected.name : '',
+      soldPrice: selected ? selected.price : 0,
+      total: selected ? selected.price * prev.soldQty : 0
+    }));
   };
 
   const handleChange = e => {
     const { name, value } = e.target;
     const updatedForm = { ...form, [name]: value };
-    if (name === 'soldQty' || name === 'soldPrice') {
-      updatedForm.total = updatedForm.soldQty * updatedForm.soldPrice;
+    
+    // Calculate total when quantity changes
+    if (name === 'soldQty') {
+      updatedForm.total = parseFloat(value || 0) * parseFloat(form.soldPrice || 0);
     }
+    
     setForm(updatedForm);
+    setError('');
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
+    
+    if (!selectedProduct) {
+      setError('Please select a product');
+      return;
+    }
+
+    if (selectedProduct.qty < form.soldQty) {
+      setError(`Only ${selectedProduct.qty} units available in stock`);
+      return;
+    }
+    
     try {
       await axios.post('http://localhost:5000/api/sales', form);
-      alert('Sale recorded successfully!');
       setForm({ date: '', productName: '', soldQty: 0, soldPrice: 0, total: 0 });
+      setSelectedProduct(null);
       fetchSales();
+      fetchProducts(); // Refresh products to get updated quantities
+      setError('');
+      alert('Sale recorded successfully!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Sale failed');
+      setError(err.response?.data?.message || 'Failed to record sale');
     }
   };
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
   return (
-    <div>
+    <div className="stock-list-container">
       <h2>Stock Sale Entry</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="date" name="date" value={form.date} onChange={handleChange} required />
-        <select name="productName" value={form.productName} onChange={handleChange} required>
-          <option value="">Select Product</option>
-          {products.map(name => (
-            <option key={name} value={name}>{name}</option>
-          ))}
-        </select>
-        <input type="number" name="soldQty" value={form.soldQty} onChange={handleChange} placeholder="Sold Qty" required />
-        <input type="number" name="soldPrice" value={form.soldPrice} onChange={handleChange} placeholder="Price per unit" required />
-        <input type="number" name="total" value={form.total} readOnly />
-        <button type="submit">Submit Sale</button>
+      {error && <div className="error-message">{error}</div>}
+      
+      <form onSubmit={handleSubmit} className="sale-form">
+        <div className="form-group">
+          <label>Date:</label>
+          <input 
+            type="date" 
+            name="date" 
+            value={form.date} 
+            onChange={handleChange} 
+            required 
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Product:</label>
+          <select 
+            value={selectedProduct?._id || ''} 
+            onChange={handleProductSelect} 
+            required
+          >
+            <option value="">Select Product</option>
+            {products.map(product => (
+              <option key={product._id} value={product._id}>
+                {product.name} - {product.brand} ({product.qty} in stock)
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {selectedProduct && (
+          <div className="product-details">
+            <p>Brand: {selectedProduct.brand}</p>
+            <p>Material: {selectedProduct.material}</p>
+            <p>Length: {selectedProduct.length}</p>
+            <p>Available Stock: {selectedProduct.qty}</p>
+          </div>
+        )}
+
+        <div className="form-group">
+          <label>Quantity:</label>
+          <input 
+            type="number" 
+            name="soldQty" 
+            value={form.soldQty} 
+            onChange={handleChange} 
+            min="1"
+            max={selectedProduct?.qty || 0}
+            required 
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Price per unit:</label>
+          <input 
+            type="number" 
+            name="soldPrice" 
+            value={form.soldPrice} 
+            readOnly
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Total:</label>
+          <input 
+            type="number" 
+            name="total" 
+            value={form.total} 
+            readOnly 
+          />
+        </div>
+
+        <button type="submit" className="submit-button">
+          Record Sale
+        </button>
       </form>
 
-      <h3>Sales Table</h3>
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Product</th>
-            <th>Sold Qty</th>
-            <th>Sold Price</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sales.map((s, i) => (
-            <tr key={i}>
-              <td>{s.date}</td>
-              <td>{s.productName}</td>
-              <td>{s.soldQty}</td>
-              <td>{s.soldPrice}</td>
-              <td>{s.total}</td>
+      <div className="sales-table-container">
+        <h3>Sales History</h3>
+        <table className="sales-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Price/Unit</th>
+              <th>Total</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sales.map((sale, index) => (
+              <tr key={index}>
+                <td>{formatDate(sale.date)}</td>
+                <td>{sale.productName}</td>
+                <td>{sale.soldQty}</td>
+                <td>₹{sale.soldPrice.toFixed(2)}</td>
+                <td>₹{sale.total.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

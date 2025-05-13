@@ -1,10 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import AdminNavbar from "./AdminNavbar";
+import LowStockAlert from "./LowStockAlert";
 
 const AdminHome = () => {
+  const [lowStockItems, setLowStockItems] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+
+  useEffect(() => {
+    checkLowStock();
+  }, []);
+
+  const checkLowStock = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/products');
+      const lowStock = response.data.filter(product => product.qty < 15)
+        .map(product => ({
+          name: product.name,
+          qty: product.qty
+        }));
+      
+      if (lowStock.length > 0) {
+        setLowStockItems(lowStock);
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error checking low stock:', error);
+    }
+  };
+
   return (
     <div style={{ backgroundColor: "#e6f0ff", minHeight: "100vh" }}>
       <AdminNavbar />
+      
+      {showAlert && (
+        <LowStockAlert 
+          lowStockItems={lowStockItems}
+          onClose={() => setShowAlert(false)}
+        />
+      )}
 
       <div style={mainContentStyle}>
         <h1 style={headingStyle}>SRI MARIAMMAN TRADERS</h1>

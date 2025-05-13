@@ -7,60 +7,103 @@
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  min-height: 100vh;
 }
 
 /* Header styles */
 .brand-header {
   text-align: center;
-  margin-bottom: 2.5rem;
-  animation: fadeIn 0.8s ease-in-out;
+  margin-bottom: 3rem;
+  padding: 2rem 0;
+  position: relative;
+  animation: slideDown 0.8s ease-out;
 }
 
 .brand-header h2 {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   color: #2c3e50;
-  margin-bottom: 0.5rem;
+  margin: 0;
   font-weight: 700;
-  background: linear-gradient(90deg, #3498db, #8e44ad);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #2c3e50, #3498db);
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+.brand-header h2::after {
+  content: '';
+  display: block;
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2c3e50);
+  margin: 15px auto;
+  border-radius: 2px;
 }
 
 /* Product grid */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  animation: fadeIn 0.8s ease-in-out;
+  gap: 30px;
+  padding: 20px;
+  animation: fadeIn 1s ease-out;
 }
 
 /* Product card styles */
 .product-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .product-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: #3498db;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2c3e50);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover::before {
+  transform: scaleX(1);
 }
 
 .product-card-inner {
-  padding: 1.5rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .product-name {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: #2c3e50;
-  margin-bottom: 0.5rem;
+  margin: 0;
   font-weight: 600;
-  height: 3rem;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  text-align: center;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+}
+
+.product-card:hover .product-name {
+  color: #3498db;
 }
 
 /* Animations */
@@ -75,7 +118,60 @@
   }
 }
 
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Shimmer effect for loading state */
+.product-card.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
 /* Responsive adjustments */
+@media (max-width: 1024px) {
+  .brand-header h2 {
+    font-size: 2.4rem;
+  }
+  
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+  }
+}
+
 @media (max-width: 768px) {
   .brand-page {
     padding: 1.5rem;
@@ -86,8 +182,9 @@
   }
 
   .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
+    padding: 15px;
   }
 }
 
@@ -98,5 +195,10 @@
 
   .product-grid {
     grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .product-card-inner {
+    padding: 1.5rem;
   }
 }
